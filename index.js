@@ -96,7 +96,7 @@ async function run(){
                 email: req.query.email
             }
         }
-        const cursor = jobOn.find(query);
+        const cursor = jobOn.find(query).sort({$natural:-1});
         const review = await cursor.toArray();
         res.send(review);
     });
@@ -129,6 +129,7 @@ async function run(){
         const a = await cursor.toArray();
         res.send(a);
     });
+
     app.get('/applyEmail', async (req, res) => {
         let query = {};
 
@@ -137,10 +138,11 @@ async function run(){
                 applicantUserEmail: req.query.applicantUserEmail
             }
         }
-        const cursor = applyCollection.find(query);
+        const cursor = applyCollection.find(query).sort({$natural:-1});
         const review = await cursor.toArray();
         res.send(review);
     });
+
     app.get('/comEmail', async (req, res) => {
         let query = {};
 
