@@ -155,6 +155,21 @@ async function run(){
         const review = await cursor.toArray();
         res.send(review);
     });
+
+    app.get('/jobId', async (req, res) => {
+        let query = {};
+
+        if (req.query.jId) {
+            query = {
+                jId: req.query.jId
+            }
+        }
+        const cursor = applyCollection.find(query);
+        const review = await cursor.toArray();
+        res.send(review);
+    });
+
+
   //
   app.get('/applicant/:id', async (req, res) => {
     const id = req.params.id;
