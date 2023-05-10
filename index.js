@@ -17,24 +17,29 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run(){
     try{
-        const usersCollection = client.db('Assignment11').collection('users');
-        const jobOn = client.db('Assignment11').collection('jobCollection');
-        const applyCollection = client.db('Assignment11').collection('apply');
-        const userJobProfile = client.db('Assignment11').collection('userJobProfile');
+        const usersCollectionApp = client.db('Assignment12').collection('appUsers');
+        const sellDetails = client.db('Assignment12').collection('sellDetails');
+        const productDetails = client.db('Assignment12').collection('productDetails');
+       
 
-    //users
-    app.post('/users', async (req, res) => {
-        const user = req.body;
-        const result = await usersCollection.insertOne(user);
-        res.send(result);
-    });
-    app.get('/users', async (req, res) => {
+
+    //Get Users
+    app.get('/appUsers', async (req, res) => {
         let query = {};
-        const cursor = usersCollection.find(query);
+        const cursor = usersCollectionApp.find(query);
         const a = await cursor.toArray();
         res.send(a);
     });
-    app.get('/email', async (req, res) => {
+
+    //Post Users
+    app.post('/appUsers', async (req, res) => {
+        const user = req.body;
+        const result = await usersCollectionApp.insertOne(user);
+        res.send(result);
+    });
+
+    //Get Users by Role
+    app.get('/appUserEmail', async (req, res) => {
         let query = {};
 
         if (req.query.email) {
@@ -42,175 +47,42 @@ async function run(){
                 email: req.query.email
             }
         }
-        const cursor = usersCollection.find(query);
-        const review = await cursor.toArray();
-        res.send(review);
-    });
-    
-
-    //add job and get job
-    app.get('/jobs', async (req, res) => {
-        let query = {};
-        const cursor = jobOn.find(query).limit(0).sort({$natural:-1});
-        const a = await cursor.toArray();
-        res.send(a); 
-    });
-    app.get('/jobs/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) };
-        const b = await jobOn.findOne(query);
-        res.send(b);
-    });
-    app.get('/jobss', async (req, res) => {
-        let query = {};
-
-        if (req.query.category) {
-            query = {
-                category: req.query.category
-            }
-        }
-        const cursor = jobOn.find(query).sort({$natural:-1});
+        const cursor = usersCollectionApp.find(query);
         const review = await cursor.toArray();
         res.send(review);
     });
 
-    app.post('/jobs', async (req, res) => {
-        const review = req.body;
-        const c = await jobOn.insertOne(review);
-        res.send(c);
-    });
-    app.get('/joblimit', async (req, res) => {
-        let query = {};
-        const cursor = jobOn.find(query).limit(3).sort({$natural:-1}) ;
-        const serve = await cursor.toArray();
-        res.send(serve);
-    });
 
 
-    //Job query by email
-    app.get('/jobEmail', async (req, res) => {
-        let query = {};
-
-        if (req.query.email) {
-            query = {
-                email: req.query.email
-            }
-        }
-        const cursor = jobOn.find(query).sort({$natural:-1});
-        const review = await cursor.toArray();
-        res.send(review);
-    });
-
-    app.delete('/jobDelete/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) };
-        const result = await jobOn.deleteOne(query);
-        res.send(result);
-    })
-
-
-    //Apply from jobCollection
-    app.get('/apply/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) };
-        const b = await jobOn.findOne(query);
-        res.send(b);
-    });
-
-    //Applied in appplyCollection
-    app.post('/apply', async (req, res) => {
+    //Post Customer Details
+    app.post('/customerInfo', async (req, res) => {
         const user = req.body;
-        const result = await applyCollection.insertOne(user);
+        const result = await sellDetails.insertOne(user);
         res.send(result);
     });
-    app.get('/apply', async (req, res) => {
+
+
+    //Get Customer Details
+    app.get('/customerInfo', async (req, res) => {
         let query = {};
-        const cursor = applyCollection.find(query);
+        const cursor = sellDetails.find(query).sort({$natural:-1});
         const a = await cursor.toArray();
         res.send(a);
     });
 
-    app.get('/applyEmail', async (req, res) => {
-        let query = {};
 
-        if (req.query.applicantUserEmail) {
-            query = {
-                applicantUserEmail: req.query.applicantUserEmail
-            }
-        }
-        const cursor = applyCollection.find(query).sort({$natural:-1});
-        const review = await cursor.toArray();
-        res.send(review);
+    //Get Single Customer Details
+    app.get('/singleDetails/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const b = await sellDetails.findOne(query);
+        res.send(b);
     });
+    
 
-    app.get('/comEmail', async (req, res) => {
-        let query = {};
-
-        if (req.query.companyEmail) {
-            query = {
-                companyEmail: req.query.companyEmail
-            }
-        }
-        const cursor = applyCollection.find(query);
-        const review = await cursor.toArray();
-        res.send(review);
-    });
-
-    app.get('/jobId', async (req, res) => {
-        let query = {};
-
-        if (req.query.jId) {
-            query = {
-                jId: req.query.jId
-            }
-        }
-        const cursor = applyCollection.find(query);
-        const review = await cursor.toArray();
-        res.send(review);
-    });
-
-
-  //
-  app.get('/applicant/:id', async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: ObjectId(id) };
-    const b = await applyCollection.findOne(query);
-    res.send(b);
-});
-
-//userJobProfile
-app.post('/userJobProfile', async (req, res) => {
-    const user = req.body;
-    const result = await userJobProfile.insertOne(user);
-    res.send(result);
-});
-app.get('/userJobProfile', async (req, res) => {
-    let query = {};
-    const cursor = userJobProfile.find(query);
-    const a = await cursor.toArray();
-    res.send(a);
-});
-app.get('/userProfileEmail', async (req, res) => {
-    let query = {};
-
-    if (req.query.applicantUserEmail) {
-        query = {
-            applicantUserEmail: req.query.applicantUserEmail
-        }
-    }
-    const cursor = userJobProfile.find(query);
-    const review = await cursor.toArray();
-    res.send(review);
-});
-
-app.delete('/userProfileDelete/:id', async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: ObjectId(id) };
-    const result = await userJobProfile.deleteOne(query);
-    res.send(result);
-})
     
     
+
 
 
 
@@ -226,9 +98,9 @@ run().catch(err => console.error(err))
 
 
 app.get('/',(req,res)=>{
-    res.send('Job Portal Server Running')
+    res.send('App Server Running')
 })
 
 app.listen(port, ()=>{
-    console.log(`Job Portal Server Running${port}`)
+    console.log(`App Server Running${port}`)
 })
